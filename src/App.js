@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import SingleCard from "./components/SingleCard";
 
 const cardImages = [
-  { src: "/img/helmet-1.png" },
-  { src: "/img/potion-1.png" },
-  { src: "/img/ring-1.png" },
-  { src: "/img/scroll-1.png" },
-  { src: "/img/shield-1.png" },
-  { src: "/img/sword-1.png" },
+  { src: "/img/helmet-1.png", matched: false },
+  { src: "/img/potion-1.png", matched: false },
+  { src: "/img/ring-1.png", matched: false },
+  { src: "/img/scroll-1.png", matched: false },
+  { src: "/img/shield-1.png", matched: false },
+  { src: "/img/sword-1.png", matched: false },
 ];
 
 function App() {
   const [cards, setCards] = useState([]);
   const [turns, setTurns] = useState(0);
+  const [choiceOne, setChoiceOne] = useState(null);
+  const [choiceTwo, setChoiceTwo] = useState(null);
 
   // Shuffle Cards
   const shuffleCards = () => {
@@ -25,6 +27,31 @@ function App() {
     setTurns(0);
   };
 
+  // Handle Choice
+  const handleChoice = card => {
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+  };
+
+  // Compare 2 Selected Cards
+  useEffect(() => {
+    if (choiceOne && choiceTwo) {
+      if (choiceOne.src === choiceTwo.src) {
+        console.log("Cards Match");
+        resetTurn();
+      } else {
+        console.log("Cards don't Match");
+        resetTurn();
+      }
+    }
+  }, [choiceOne, choiceTwo]);
+
+  // Reset Choices & increase Turns
+  const resetTurn = () => {
+    setChoiceOne(null);
+    setChoiceTwo(null);
+    setTurns(prevTurns => prevTurns + 1);
+  };
+
   return (
     <div className="App">
       <h1>Memory Game</h1>
@@ -32,7 +59,7 @@ function App() {
 
       <div className="card-grid">
         {cards.map(card => (
-          <SingleCard key={card.id} card={card} />
+          <SingleCard key={card.id} card={card} handleChoice={handleChoice} />
         ))}
       </div>
     </div>
